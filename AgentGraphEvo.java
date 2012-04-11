@@ -163,11 +163,17 @@ public class AgentGraphEvo {
 			
 			
 			for (int idx=0; idx<AgentNum; ++idx) {
-				//Accounts for inability for agents to select themselves.
-				CompAgent = randomGen.nextInt(AgentNum-1);
-				if (CompAgent>=idx) {
-					CompAgent++;
+
+				//Accounts for inability for agents to select themselves in false case.
+				if (UsePath == false) {
+					CompAgent = randomGen.nextInt(AgentNum-1);
+					if (CompAgent>=idx) {
+						CompAgent++;
+					}
+				} else {
+					CompAgent = nodeLink[idx][randomGen.nextInt(nodeLink[idx].length)];
 				}
+
 				//Compare each agent to random other agent and adopt better scoring stats
 				if (ScoreArr[idx]>=ScoreArr[CompAgent]) {
 					//Mutation of Tolerence(Gaussian)

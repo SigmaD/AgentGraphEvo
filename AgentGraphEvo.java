@@ -41,6 +41,7 @@ public class AgentGraphEvo {
 		double[] OldTagArr;
 		int[] ScoreArr; //Agent Score
 		int DonationCount = 0;
+		int MaxDonations = 0;
 		double AvgDon = 0;
 		TagArr = new double[AgentNum];
 		TolArr = new double[AgentNum];
@@ -121,6 +122,7 @@ public class AgentGraphEvo {
 		
 			//Donation Step
 			int CompAgent;
+			MaxDonations = 0;
 			DonationCount = 0;
 			for (int idx=0; idx<AgentNum; ++idx) {
 				if (nodeLink[idx].length > 0 || UsePath == false) { //Check that the node is connected to anything
@@ -139,7 +141,7 @@ public class AgentGraphEvo {
 							//Random across connected agents
 							CompAgent = nodeLink[idx][randomGen.nextInt(nodeLink[idx].length)];
 						}
-						
+						MaxDonations++; //Increment the number of possible donations
 						//Donation computation
 						if (Math.abs(TagArr[idx]-TagArr[CompAgent]) <= TolArr[idx]) {
 							ScoreArr[idx] = ScoreArr[idx] - 1;
@@ -150,7 +152,7 @@ public class AgentGraphEvo {
 					}
 				}
 			}
-			AvgDon = AvgDon +((double)DonationCount/(double)(AgentNum*PotentialDoners))*100;
+			AvgDon = AvgDon +((double)DonationCount/(double)(MaxDonations))*100;
 				//System.out.println(GenNum + ": ");
 				//System.out.println(((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
 			

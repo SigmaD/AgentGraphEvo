@@ -1,3 +1,12 @@
 AgentGraphEvo
 
 Evolutionary Model for tag Based Agents on a given Graph.
+
+If no command line arguments are provided, the setup detailed by RCA will be used.
+Otherwise, 3 or 4 command line arguments can be provided:
+1.number of agents.
+2.total number of generations.
+3.Number of potential donors in each evolutionary step.
+(4).filepath of network. If this is not provided, every agent will be connected to every 
+other agent.
+

@@ -123,28 +123,30 @@ public class AgentGraphEvo {
 			int CompAgent;
 			DonationCount = 0;
 			for (int idx=0; idx<AgentNum; ++idx) {
-				for (int PotIdx=0; PotIdx<PotentialDoners; ++PotIdx) {
-					
-					//Selection of agent to compare to.
-					
-					if (UsePath == false) {
-						//Random across all agents
-						//Accounts for inability for agents to select themselves.
-						CompAgent = randomGen.nextInt(AgentNum-1);
-						if (CompAgent>=idx) {
-							CompAgent++;
+				if (nodeLink[idx].length > 0 || UsePath == false) { //Check that the node is connected to anything
+					for (int PotIdx=0; PotIdx<PotentialDoners; ++PotIdx) {
+						
+						//Selection of agent to compare to.
+						
+						if (UsePath == false) {
+							//Random across all agents
+							//Accounts for inability for agents to select themselves.
+							CompAgent = randomGen.nextInt(AgentNum-1);
+							if (CompAgent>=idx) {
+								CompAgent++;
+							}
+						} else {
+							//Random across connected agents
+							CompAgent = nodeLink[idx][randomGen.nextInt(nodeLink[idx].length)];
 						}
-					} else {
-						//Random across connected agents
-						CompAgent = nodeLink[idx][randomGen.nextInt(nodeLink[idx].length)];
-					}
-					
-					//Donation computation
-					if (Math.abs(TagArr[idx]-TagArr[CompAgent]) <= TolArr[idx]) {
-						ScoreArr[idx] = ScoreArr[idx] - 1;
-						ScoreArr[CompAgent] = ScoreArr[CompAgent] + 10;
-						DonationCount++;
-						//System.out.println("Agent "+idx+" donates to agent "+CompAgent); //Debug Monitor
+						
+						//Donation computation
+						if (Math.abs(TagArr[idx]-TagArr[CompAgent]) <= TolArr[idx]) {
+							ScoreArr[idx] = ScoreArr[idx] - 1;
+							ScoreArr[CompAgent] = ScoreArr[CompAgent] + 10;
+							DonationCount++;
+							//System.out.println("Agent "+idx+" donates to agent "+CompAgent); //Debug Monitor
+						}
 					}
 				}
 			}
@@ -163,6 +165,7 @@ public class AgentGraphEvo {
 			
 			
 			for (int idx=0; idx<AgentNum; ++idx) {
+			if (nodeLink[idx].length > 0 || UsePath == false) { //Check that the node is connected to anything
 
 				//Accounts for inability for agents to select themselves in false case.
 				if (UsePath == false) {
@@ -207,7 +210,7 @@ public class AgentGraphEvo {
 					}
 				}
 			}
-			
+			}
 			//Reset Scores
 			for (int idx=0; idx<AgentNum; ++idx) {
 				ScoreArr[idx]=0;

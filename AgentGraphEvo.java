@@ -39,6 +39,7 @@ public class AgentGraphEvo {
 		double[] TolArr; //Agent Tolerence
 		double[] OldTolArr;
 		double[] OldTagArr;
+		int[] AgentTag; //to consider agent tag ever hundred generations
 		int[] ScoreArr; //Agent Score
 		int DonationCount = 0;
 		int MaxDonations = 0;
@@ -155,7 +156,16 @@ public class AgentGraphEvo {
 			AvgDon = AvgDon +((double)DonationCount/(double)(MaxDonations))*100;
 				//System.out.println(GenNum + ": ");
 				//System.out.println(((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
+			if (GenNum%100==0) {
+				AgentTag = new int[100];
+				// Examine Tag Clustering
+				for (int agnt = 0; agnt < AgentNum; agnt++) {
+					AgentTag[(int)(100*TagArr[agnt])]++;
+				}
+				System.out.println(Arrays.toString(AgentTag));
+			}
 			
+
 			//Evolution Step
 			//double[] OldTolArr = TolArr;
 			//double[] OldTagArr = TagArr;

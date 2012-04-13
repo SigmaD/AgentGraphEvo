@@ -160,7 +160,9 @@ public class AgentGraphEvo {
 				AgentTag = new int[100];
 				// Examine Tag Clustering
 				for (int agnt = 0; agnt < AgentNum; agnt++) {
-					AgentTag[(int)(100*TagArr[agnt])]++;
+					if (UsePath == false || nodeLink[agnt].length != 0) {	//Removed disconnected nodes(that cannot change) from count.
+						AgentTag[(int)(100*TagArr[agnt])]++;
+					}
 				}
 				System.out.println(Arrays.toString(AgentTag));
 			}

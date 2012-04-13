@@ -158,13 +158,21 @@ public class AgentGraphEvo {
 				//System.out.println(((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
 			if (GenNum%100==0) {
 				AgentTag = new int[100];
+				double AvgTol;
+				int TrueAgentNum;
+				AvgTol = 0;
+				TrueAgentNum = 0;
 				// Examine Tag Clustering
 				for (int agnt = 0; agnt < AgentNum; agnt++) {
 					if (UsePath == false || nodeLink[agnt].length != 0) {	//Removed disconnected nodes(that cannot change) from count.
 						AgentTag[(int)(100*TagArr[agnt])]++;
+						AvgTol = AvgTol + TolArr[agnt];
+						TrueAgentNum++;
 					}
 				}
+				AvgTol = AvgTol/TrueAgentNum;
 				System.out.println(Arrays.toString(AgentTag));
+				System.out.println(AvgTol);
 			}
 			
 

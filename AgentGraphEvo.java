@@ -155,8 +155,8 @@ public class AgentGraphEvo {
 			}
 			AvgDon = AvgDon +((double)DonationCount/(double)(MaxDonations))*100;
 				//System.out.println(GenNum + ": ");
-				//System.out.println(((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
 			if (GenNum%100==0) {
+				System.out.println("AvgDon: " + ((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
 				AgentTag = new int[100];
 				double AvgTol;
 				int TrueAgentNum;
@@ -172,7 +172,7 @@ public class AgentGraphEvo {
 				}
 				AvgTol = AvgTol/TrueAgentNum;
 				System.out.println(Arrays.toString(AgentTag));
-				System.out.println(AvgTol);
+				System.out.println("AvgTol: " + AvgTol);
 			}
 			
 

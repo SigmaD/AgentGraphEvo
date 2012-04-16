@@ -79,7 +79,6 @@ public class AgentGraphEvo {
 				//Read File Line By Line
 				while ((strLine = br.readLine()) != null)   {
 					//String Operations go here
-					
 					strFirst = strLine.charAt(0);
 					if (strFirst != '#') {
 						nodelist = strLine.split("\t");

@@ -245,7 +245,7 @@ public class AgentGraphEvo {
 		//	System.out.println(TolArr[idx]);
 		//}
 		System.out.println("---");
-		System.out.println("Avgerage Donation Rate / Generation: " + AvgDon/TotGen);
+		System.out.println("Average Donation Rate / Generation: " + AvgDon/TotGen);
 		
 	}
 

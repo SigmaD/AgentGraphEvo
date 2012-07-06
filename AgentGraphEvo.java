@@ -39,7 +39,14 @@ public class AgentGraphEvo {
 		double[] TolArr; //Agent Tolerence
 		double[] OldTolArr;
 		double[] OldTagArr;
-		int[] AgentTag; //to consider agent tag ever hundred generations
+
+		//Hamming Distance modification
+		int bitstrlen = 10;
+		boolean[][] AgentbTag = new boolean[bitstrlen][AgentNum];
+		boolean[][] OldAgentbTag;
+		boolean HDist = true; //For Testing
+
+		int[] AgentTag; //to consider agent tag over hundred generations
 		int[] ScoreArr; //Agent Score
 		int DonationCount = 0;
 		int MaxDonations = 0;
@@ -48,6 +55,7 @@ public class AgentGraphEvo {
 		TolArr = new double[AgentNum];
 		OldTagArr = new double[AgentNum];
 		OldTolArr = new double[AgentNum];
+		OldAgentbTag = new boolean[bitstrlen][AgentNum];
 		ScoreArr = new int[AgentNum];
 		Random randomGen = new Random();
 		
@@ -59,7 +67,18 @@ public class AgentGraphEvo {
 		
 		//Generate Agents
 		for (int idx=0; idx<AgentNum; ++idx) {
-			TagArr[idx] = Math.random();
+			//Generate boolean array
+			if (HDist) {
+				for (int subidx=0; subidx<bitstrlen; ++subidx) {
+					if (Math.random() > 0.5) {
+						AgentbTag[subidx][idx] = true;
+					} else {
+						AgentbTag[subidx][idx] = false;
+					}
+				}
+			} else {
+				TagArr[idx] = Math.random();
+			}
 			TolArr[idx] = Math.random();
 		}
 		//If a network is given, load the configuration into memory.
@@ -103,10 +122,6 @@ public class AgentGraphEvo {
 					    	nodeLink[nodeTo] = new int[nodeLink[nodeTo].length + 1];
 					    	System.arraycopy(tempNodeArr, 0, nodeLink[nodeTo], 0, tempNodeArr.length);
 						nodeLink[nodeTo][nodeLink[nodeTo].length-1] = (int)nodeFrom;
-						
-						
-						//Why you not dynamically resize array java?
-						
 					}
 				
 				}
@@ -142,12 +157,20 @@ public class AgentGraphEvo {
 							CompAgent = nodeLink[idx][randomGen.nextInt(nodeLink[idx].length)];
 						}
 						MaxDonations++; //Increment the number of possible donations
-						//Donation computation
-						if (Math.abs(TagArr[idx]-TagArr[CompAgent]) <= TolArr[idx]) {
-							ScoreArr[idx] = ScoreArr[idx] - 1;
-							ScoreArr[CompAgent] = ScoreArr[CompAgent] + 10;
-							DonationCount++;
-							//System.out.println("Agent "+idx+" donates to agent "+CompAgent); //Debug Monitor
+						if (HDist) {
+							if (hammingDistance(AgentbTag,idx,CompAgent) <= TolArr[idx]*bitstrlen) {
+								ScoreArr[idx] = ScoreArr[idx] - 1;
+                                                        	ScoreArr[CompAgent] = ScoreArr[CompAgent] + 10;
+                                                        	DonationCount++;
+							}
+						} else {
+							//Donation computation for non-HDist
+							if (Math.abs(TagArr[idx]-TagArr[CompAgent]) <= TolArr[idx]) {
+								ScoreArr[idx] = ScoreArr[idx] - 1;
+								ScoreArr[CompAgent] = ScoreArr[CompAgent] + 10;
+								DonationCount++;
+								//System.out.println("Agent "+idx+" donates to agent "+CompAgent); //Debug Monitor
+							}
 						}
 					}
 				}
@@ -161,27 +184,34 @@ public class AgentGraphEvo {
 				int TrueAgentNum;
 				AvgTol = 0;
 				TrueAgentNum = 0;
-				// Examine Tag Clustering
-				for (int agnt = 0; agnt < AgentNum; agnt++) {
-					if (UsePath == false || nodeLink[agnt].length != 0) {	//Removed disconnected nodes(that cannot change) from count.
-						AgentTag[(int)(100*TagArr[agnt])]++;
-						AvgTol = AvgTol + TolArr[agnt];
-						TrueAgentNum++;
+				// Examine Tag Clustering if not HDist
+				if (HDist == false) {
+					for (int agnt = 0; agnt < AgentNum; agnt++) {
+						if (UsePath == false || nodeLink[agnt].length != 0) {	//Removed disconnected nodes(that cannot change) from count.
+							AgentTag[(int)(100*TagArr[agnt])]++;
+							AvgTol = AvgTol + TolArr[agnt];
+							TrueAgentNum++;
+						}
 					}
+					AvgTol = AvgTol/TrueAgentNum;
+					System.out.println(Arrays.toString(AgentTag));
+					System.out.println("AvgTol: " + AvgTol);
 				}
-				AvgTol = AvgTol/TrueAgentNum;
-				System.out.println(Arrays.toString(AgentTag));
-				System.out.println("AvgTol: " + AvgTol);
 			}
 			
 
 			//Evolution Step
-			//double[] OldTolArr = TolArr;
-			//double[] OldTagArr = TagArr;
 			
 			for (int idx=0; idx<AgentNum; ++idx) {
 				OldTolArr[idx]=TolArr[idx];
-				OldTagArr[idx]=TagArr[idx];
+				//If using hamming distance modification
+				if (HDist) {
+                               		for (int subidx=0; subidx<bitstrlen; ++subidx) {
+						OldAgentbTag[subidx][idx]=AgentbTag[subidx][idx];
+					}
+                        	} else {
+                                	OldTagArr[idx] = TagArr[idx];
+                        	}
 			}
 			
 			
@@ -208,11 +238,27 @@ public class AgentGraphEvo {
 					} else {
 						TolArr[idx] = OldTolArr[idx];
 					}
-					//Mutation of Tag (Random New Tag)
+					//Mutation of Tag (Random New Tag) - Checks for use of HDist
 					if (Math.random()<0.1) {
-						TagArr[idx] = Math.random();
+						if (HDist) {
+							for (int subidx=0; subidx<bitstrlen; ++subidx) {
+                                        			if (Math.random() > 0.5) {
+                                                			AgentbTag[subidx][idx] = true;
+                                        			} else {
+                                                			AgentbTag[subidx][idx] = false;
+                                				}
+							}
+						} else {
+							TagArr[idx] = Math.random();
+						}
 					} else {
-						TagArr[idx] = OldTagArr[idx];
+						if (HDist) {
+							for (int subidx=0; subidx<bitstrlen; ++subidx) {
+								AgentbTag[subidx][idx] = OldAgentbTag[subidx][idx];
+							}
+						} else {
+							TagArr[idx] = OldTagArr[idx];
+						}
 					}
 				} else {
 					//Mutation of Tolerence(Gaussian)
@@ -223,11 +269,27 @@ public class AgentGraphEvo {
 					} else {
 						TolArr[idx] = OldTolArr[CompAgent];
 					}
-					//Mutation of Tag (Random New Tag)
+					//Mutation of Tag (Random New Tag) - checks for use of HDist
 					if (Math.random()<0.1) {
-						TagArr[idx] = Math.random();
+						if (HDist) {
+                                                        for (int subidx=0; subidx<bitstrlen; ++subidx) {
+                                                                if (Math.random() > 0.5) {
+                                                                        AgentbTag[subidx][idx] = true;
+                                                               	} else {
+                                                                        AgentbTag[subidx][idx] = false;
+                                                               	}
+                                                       	}
+                                               	} else {
+                                                        TagArr[idx] = Math.random();
+                                                }
 					} else {
-						TagArr[idx] = OldTagArr[CompAgent];
+						if (HDist) {
+                                                       	for (int subidx=0; subidx<bitstrlen; ++subidx) {
+                                                               	AgentbTag[subidx][idx] = OldAgentbTag[subidx][CompAgent];
+                                                       	}
+                                               	} else {
+                                                        TagArr[idx] = OldTagArr[CompAgent];
+                                                }
 					}
 				}
 			}
@@ -248,5 +310,13 @@ public class AgentGraphEvo {
 		System.out.println("Average Donation Rate / Generation: " + AvgDon/TotGen);
 		
 	}
+	static int hammingDistance(boolean[][] array1, int agt1, int agt2) {
+		int result = 0;
+		for(int i = 0; i < array1.length; i++) {
+			if(array1[i][agt1] != array1[i][agt2]) { result++; }
+		}
+		return result;
+	}
 
 }
+

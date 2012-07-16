@@ -184,6 +184,9 @@ public class AgentGraphEvo {
 				int TrueAgentNum;
 				AvgTol = 0;
 				TrueAgentNum = 0;
+				//HDIST vars
+				int HAgenttag[];
+				HAgenttag = new int[bitstrlen];
 				// Examine Tag Clustering if not HDist
 				if (HDist == false) {
 					for (int agnt = 0; agnt < AgentNum; agnt++) {
@@ -196,6 +199,18 @@ public class AgentGraphEvo {
 					AvgTol = AvgTol/TrueAgentNum;
 					System.out.println(Arrays.toString(AgentTag));
 					System.out.println("AvgTol: " + AvgTol);
+				} else {
+					System.out.println("HDist in use");
+					for (int agnt = 0; agnt < AgentNum; agnt++) {
+						if (UsePath == false || nodeLink[agnt].length != 0) {
+							for (int hidx = 0; hidx < bitstrlen; hidx++) {
+								if (AgentbTag[hidx][agnt] == true) {
+									HAgenttag[hidx]++;
+								}
+							}
+						}
+					}
+					System.out.println(Arrays.toString(HAgenttag));
 				}
 			}
 			

@@ -51,6 +51,7 @@ public class AgentGraphEvo {
 		int DonationCount = 0;
 		int MaxDonations = 0;
 		double AvgDon = 0;
+		double AvgDonSqr = 0;
 		TagArr = new double[AgentNum];
 		TolArr = new double[AgentNum];
 		OldTagArr = new double[AgentNum];
@@ -176,6 +177,7 @@ public class AgentGraphEvo {
 				}
 			}
 			AvgDon = AvgDon +((double)DonationCount/(double)(MaxDonations))*100;
+			AvgDonSqr = AvgDonSqr + Math.pow(((double)DonationCount/(double)(MaxDonations))*100,2);
 				//System.out.println(GenNum + ": ");
 			if (GenNum%100==0) {
 				System.out.println("AvgDon: " + ((double)DonationCount/(double)(AgentNum*PotentialDoners))*100); //prints Donation Rate (percentage) this generation.
@@ -200,17 +202,21 @@ public class AgentGraphEvo {
 					System.out.println(Arrays.toString(AgentTag));
 					System.out.println("AvgTol: " + AvgTol);
 				} else {
-					System.out.println("HDist in use");
+					//System.out.println("HDist in use");
 					for (int agnt = 0; agnt < AgentNum; agnt++) {
 						if (UsePath == false || nodeLink[agnt].length != 0) {
+							//Fix this loop - horribly suboptimal
 							for (int hidx = 0; hidx < bitstrlen; hidx++) {
 								if (AgentbTag[hidx][agnt] == true) {
 									HAgenttag[hidx]++;
 								}
 							}
+							AvgTol = AvgTol + TolArr[agnt];
 						}
 					}
 					System.out.println(Arrays.toString(HAgenttag));
+					AvgTol = AvgTol/AgentNum;
+					System.out.println("AvgTol: " + AvgTol);
 				}
 			}
 			
@@ -323,6 +329,7 @@ public class AgentGraphEvo {
 		//}
 		System.out.println("---");
 		System.out.println("Average Donation Rate / Generation: " + AvgDon/TotGen);
+		System.out.println("Standard Deviation of Donation Rate / Generation: " + Math.sqrt(AvgDonSqr/TotGen-Math.pow(AvgDon/TotGen,2)));
 		
 	}
 	static int hammingDistance(boolean[][] array1, int agt1, int agt2) {
